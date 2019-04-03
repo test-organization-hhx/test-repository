@@ -40,7 +40,7 @@ public class Demo {
             System.out.println("start " + Thread.currentThread().getName());
             Random random = new Random();
             try {
-                int time = random.nextInt(50000);
+                int time = random.nextInt(5000000);
                 System.out.println("" + Thread.currentThread().getName() + " sleep time: " + time);
                 Thread.sleep(time);
             } catch (InterruptedException e) {
