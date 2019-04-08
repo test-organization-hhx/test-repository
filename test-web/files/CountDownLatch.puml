@@ -1,0 +1,28 @@
+@startuml
+
+autonumber
+
+主线程 -> CountDownLatch: 传参count调用构造方法
+CountDownLatch -> CountDownLatch.Sync: 初始化Sync(Sync继承至AbstractQueuedSynchronizer)，设置state为count
+CountDownLatch.Sync -> CountDownLatch : 给sync属性赋值
+
+
+主线程 -> CountDownLatch: 调用await方法
+
+CountDownLatch -> AbstractQueuedSynchronizer : 调用acquireSharedInterruptibly方法
+AbstractQueuedSynchronizer -> CountDownLatch.Sync : 调用tryAcquireShared尝试获取共享锁
+CountDownLatch.Sync -> AbstractQueuedSynchronizer : 调用doAcquireSharedInterruptibly方法
+AbstractQueuedSynchronizer -> AbstractQueuedSynchronizer : 调用addWaiter方法，为当前线程创建一个使用共享锁的Node,如果当前队尾节点不为空，则将该节点加入到CLH队尾
+
+AbstractQueuedSynchronizer -> AbstractQueuedSynchronizer :　如果当前CLH队列为空，则调用enq方法，初始化头节点，并使用CAS方式将Node加入到队尾
+
+AbstractQueuedSynchronizer -> CountDownLatch.Sync :　如果当前节点的前驱节点是头节点，则调用tryAcquireShared尝试获取共享锁
+
+AbstractQueuedSynchronizer -> AbstractQueuedSynchronizer :　如果获取共享锁成功，则调用setHeadAndPropagate方法设置当前节点为头节点
+
+AbstractQueuedSynchronizer -> 主线程 : 主线程中断阻塞，开始执行
+
+title CountDownLatch 处理时序图
+
+
+@enduml
